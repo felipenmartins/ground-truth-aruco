@@ -1,6 +1,6 @@
-# ground-truth-aruco
+# Ground-truth ArUco
 
-Computer-vision scripts for generating ArUco markers, calibrating a camera, and estimating marker position/orientation from a live video feed.
+Computer-vision scripts for generating ArUco markers, calibrating a camera, and estimating marker position/orientation from a live video feed. Can be used as ground truth for indoors robot localization.
 
 ## What this repository does
 
@@ -36,6 +36,8 @@ Python dependencies:
 
 ## Installation
 
+You need OpenCV:
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
@@ -43,11 +45,16 @@ pip install --upgrade pip
 pip install opencv-contrib-python numpy
 ```
 
+Other than that, just copy the scripts (or clone this repository) to a folder in your computer.
+
 ## Usage
 
 > Most scripts use configurable constants near the top (for example `camera_index`, marker sizes, IDs, and paths). Adjust those before running.
 
 ### 1) Generate markers
+
+You will need to place ArUco markers on the corners of the area used for localization. 
+First, adjust the size and number of markers to be generated in the script before running it. Then, run:
 
 ```bash
 python 0_generate_markers.py
@@ -56,11 +63,19 @@ python 0_generate_markers.py
 Expected output:
 - Marker PNG files written to `docs/markers/`.
 
+Print the markers and put 4 of them in the corners of the area.
+
 ### 2) Capture calibration images
+
+The camera calibration is done with a checkerboard. You can generate a calibration checkerboard [here](https://markhedleyjones.com/projects/calibration-checkerboard-collection).
+
+Adjust the parameters of your checkerboard in the script and run it:
 
 ```bash
 python 1_capture_images.py
 ```
+
+Place the checkerboard in different positions in front of the camera (it must be fully visible). Save about 15-20 images of the checkerboard in different positions and orientations.
 
 Controls:
 - `s`: save frame (only when checkerboard is detected)
@@ -70,6 +85,8 @@ Expected output:
 - Captured images in the configured folder (`image_path` in the script).
 
 ### 3) Calibrate camera
+
+The calibration scripts will use the images saved in the previous step and generate the camera calibration matrix.
 
 ```bash
 python 2_calibration_script.py
@@ -92,21 +109,7 @@ Expected output (varies by script):
 - Optional CSV logs (for scripts with CSV enabled)
 - Optional video output (`output_YYYYMMDD_HHMMSS.avi` in `4_aruco-ground-truth.py`)
 
-## Project structure
-
-```text
-.
-├── 0_generate_markers.py
-├── 1_capture_images.py
-├── 2_calibration_script.py
-├── 3_markerdetection.py
-├── 4_aruco-ground-truth.py
-├── 5_detecting_any_aruco_marker.py
-├── 6_detecting_rotation.py
-└── README.md
-```
-
 ## Notes and placeholders
 
-- Directory names for captured images differ between scripts by default (for example `images_multiple_planes_test` vs `images_multiple_planes`). Align these paths in your local setup.
+- Directory names for captured images differ between scripts by default. Align these paths in your local setup.
 - Some defaults (camera index, marker IDs, physical dimensions) are environment-specific and should be treated as project placeholders to tune for your hardware/layout.
